@@ -248,5 +248,86 @@ router.delete('/experience/:exp_id', auth, async (req, res) => {
     }
 })
 
+//@route  PUT /api/profile/experience 
+//@desc   ADD profile experience
+//@access  Private
+router.put('/education', [ auth, [
+    check('school', 'School is required')
+        .not()
+        .isEmpty(),
+    check('degree', 'Degree is required')
+    .not()
+    .isEmpty(),
+    check('fieldofstudy', 'Fields of study is required')
+    .not()
+    .isEmpty(),
+    check('from', 'From date is required')
+    .not()
+    .isEmpty()
+    ]
+], 
+async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+                                // return array of errors
+        return res.status(400).json({errors: errors.array()})
+    }
+    const {
+        school,
+        degree,
+        fieldofstudy,
+        from,
+        to,
+        current,
+        description
+    } = req.body;
+
+    const newEdu = {
+        school,
+        degree,
+        fieldofstudy,
+        from,
+        to,
+        current,
+        description
+    }
+
+    try {
+        const profile = await Profile.findOne({ user: req.user.id })
+        // add most recent experience to begining of array
+        profile.education.unshift(newEdu)
+        // save new profile info
+        await profile.save();
+
+        res.json(profile);
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ msg: 'Server Error' })
+    }
+})
+//@route  DELETE /api/profile/experience/:exp_id
+//@desc   DELETE a profile experience
+//@access  Private
+router.delete('/education/:edu_id', auth, async (req, res) => {
+    try {
+        // find users profile
+        const profile = await Profile.findOne({ user: req.user.id })
+       
+        // convert experience array to an array of experience ids, find the index of desired id
+        const removeIndex = profile.education.map((item) => (item.id)).indexOf(req.params.edu_id);
+        // remove experience from array
+        let newEducation = profile.education
+        newEducation.splice(removeIndex, 1)
+        profile.education = newEducation
+        
+        // save updated profile document
+        await profile.save();
+
+        res.json(profile)
+    } catch (err) {
+        console.log(err.message)
+        res.status(500).send('Server Error')
+    }
+})
 
 module.exports = router
