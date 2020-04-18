@@ -1,4 +1,6 @@
 {
     "mongoURI": "mongodb+srv://grant123:grant123@devconnector-d4ivu.mongodb.net/test?retryWrites=true&w=majority",
-    "jwtSecret": "mysecrettoken"
+    "jwtSecret": "mysecrettoken",
+    "githubClientId": "1fedb90059a60f58faeb",
+    "githubSecret": "640eeb01e3e069f3eb90a1368cbaf8da7d12b211"
 }
