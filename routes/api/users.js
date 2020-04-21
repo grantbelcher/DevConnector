@@ -14,21 +14,22 @@ const User = require('../../models/User')
 // @desc    TEST route
 // @access  Public
 router.post('/',[
-   check('username', 'invalid username')
+   check('name', 'invalid username')
     .not()
     .isEmpty(),
    check('email', 'please add an email address')
     .isEmail(),
    check('password', 'password must be at least 5 characters').isLength({ min: 5 })
 ], async (req, res) => {
-    console.log(req.body)
+    
     const errors = validationResult(req);
+    console.log(errors.array())
     if (!errors.isEmpty()) {
         return res.status(422).json({errors: errors.array() })
     } 
     
-    const {username, email, password} = req.body
-
+    const {name: username, email, password} = req.body
+    console.log(username)
     try {
         // check if user exists
         let user = await User.findOne({email})
